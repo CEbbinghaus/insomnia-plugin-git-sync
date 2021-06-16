@@ -9,6 +9,10 @@ class WorkspaceRepo {
     return await this.context.store.getItem(storeKey);
   }
 
+  async removePath() {
+    return await this.context.store.removeItem(storeKey);
+  }
+
   async setPath(path) {
     return await this.context.store.setItem(storeKey, path);
   }

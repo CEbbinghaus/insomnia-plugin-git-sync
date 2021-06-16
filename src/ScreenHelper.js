@@ -1,23 +1,37 @@
+const pathTool = require('path');
+
 class ScreenHelper {
   static async alertError(context, message) {
-    return await context.app.alert('Erro!', message);
+    return await context.app.alert('Error!', message);
   }
 
-  static async askRepoPath(context, options={}) {
-    await context.app.alert(
-      'Selecione Repositorio',
-      `Escolha o repositorio para sincronizar workspaces\nWorkspace Atual: ${options.currentPath}`
-    );
-    const path = await context.app.showSaveDialog({defaultPath: options.workspaceName});
+  static async askRepoPath(context, {currentPath, workspaceName}) {
+    if(currentPath == "null")
+      currentPath = null;
 
-    return normalizePath(path);
+    if(currentPath != null){
+      
+      const parsed = pathTool.parse(currentPath);
+      await context.app.alert(`Workspace already has a Repository!`, `Location: "${currentPath}.\nAre you sure you want to Overwrite it?"`);
+    }
+
+    const newPath =  await context.app.showSaveDialog({defaultPath: currentPath || ""});
+
+    if(currentPath != null && newPath == null)
+    {
+      const res = await context.app.prompt(`Are you sure you want to delete the Workspace Repository?`, 
+      {
+        label: `Enter ${workspaceName} to confirm.`
+      }).catch(() => undefined);
+
+      if(res == workspaceName)
+        return null;
+      
+      return currentPath;
+
+    }
+    return newPath;
   }
 }
-
-const normalizePath = (path) => {
-  if (path == null || path == 'undefined') return null;
-
-  return path.substr(0, path.lastIndexOf('/'));
-};
 
 module.exports = ScreenHelper;
