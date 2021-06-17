@@ -1,25 +1,32 @@
-const storeKey = 'insomnia-plugin-repo-sync-workspace';
-
 class WorkspaceRepo {
-  constructor(context) {
-    this.context = context;
-  }
+	prefix = "git-sync:";
+	workspaceName = "";
+	context;
 
-  async getPath() {
-    return await this.context.store.getItem(storeKey);
-  }
+	get key() {
+		return `${this.prefix}${this.workspaceName}`;
+	}
 
-  async removePath() {
-    return await this.context.store.removeItem(storeKey);
-  }
+	constructor(context, models) {
+		this.context = context;
+		this.workspaceName = models.workspace.name;
+	}
 
-  async setPath(path) {
-    return await this.context.store.setItem(storeKey, path);
-  }
+	async getPath() {
+		return await this.context.store.getItem(this.key);
+	}
 
-  async isConfigured() {
-    return await this.context.store.hasItem(storeKey);
-  }
+	async removePath() {
+		return await this.context.store.removeItem(this.key);
+	}
+
+	async setPath(path) {
+		return await this.context.store.setItem(this.key, path);
+	}
+
+	async isConfigured() {
+		return await this.context.store.hasItem(this.key);
+	}
 }
 
 module.exports = WorkspaceRepo;
